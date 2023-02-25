@@ -50,7 +50,7 @@ def main(x):
             t1 = time.time()
             res = cv.inpaint(src=img_mask, inpaintMask=inpaintmask, inpaintRadius=3, flags=cv.INPAINT_TELEA)
             t2 = time.time()
-            cv.imshow('Inpaint with FMM', res)
+            cv.imshow('FMM', res)
             cv.imwrite('FontImage/Output/Font_{}.jpg'.format(x), res)
         if ch == ord('r'):
             img_mask[:] = img
@@ -62,6 +62,6 @@ def main(x):
         cv.destroyAllWindows()
 
 
-for i in range(1, 3000):
+for i in range(1, 10000):
     main(f"{i}")
     cv.destroyAllWindows()
