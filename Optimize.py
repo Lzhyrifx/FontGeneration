@@ -15,12 +15,9 @@ class Sketcher:
 
     def show(self):
         cv.namedWindow(self.windowname, 0)
-        cv.resizeWindow(self.windowname, 400, 400)
-        cv.moveWindow(self.windowname, 960, 100)
         cv.imshow(self.windowname, self.dests[0])
-        cv.imshow(self.windowname + ":mask", self.dests[1])
 
-    def on_mouse(self, event, x, y, flags, param):
+    def on_mouse(self, event, x, y, flags, _):
         point = (x, y)
         if event == cv.EVENT_LBUTTONDOWN:
             self.prev_point = point
@@ -28,20 +25,20 @@ class Sketcher:
             self.prev_point = None
         if self.prev_point and flags & cv.EVENT_FLAG_LBUTTON:
             for dst, color in zip(self.dests, self.colors_func()):
-                cv.line(dst, self.prev_point, point, color, 5)
+                cv.line(dst, self.prev_point, point, color, 30)
         self.dirty = True
         self.prev_point = point
         self.show()
 
 
 def main(x):
-    img = cv.imread("FontImage/Process/Font_" + x + ".jpg", cv.IMREAD_COLOR)
+    img = cv.imread("FontImage/OriginalSingleWord/Image" + x + ".jpg", cv.IMREAD_COLOR)
     if img is None:
-        print("Failed to read the image")
+        pass
         return
     img_mask = img.copy()
     inpaintmask = np.zeros(img.shape[:2], np.uint8)
-    sketch = Sketcher('image', [img_mask, inpaintmask], lambda: ((255, 255, 255), 255))
+    Sketcher('image', [img_mask, inpaintmask], lambda: ((255, 255, 255), 255))
     while True:
         ch = cv.waitKey()
         if ch == 27:
@@ -51,17 +48,10 @@ def main(x):
             res = cv.inpaint(src=img_mask, inpaintMask=inpaintmask, inpaintRadius=3, flags=cv.INPAINT_TELEA)
             t2 = time.time()
             cv.imshow('FMM', res)
-            cv.imwrite('FontImage/Output/Font_{}.jpg'.format(x), res)
-        if ch == ord('r'):
-            img_mask[:] = img
-            inpaintmask[:] = 0
-            sketch.show()
+            cv.imwrite('FontImage/IndividualCharacter/Image{}.jpg'.format(x), res)
         break
-    key = cv.waitKey(1)
-    if key == ord("x"):
-        cv.destroyAllWindows()
 
 
-for i in range(1, 10000):
+for i in range(0, 10000):
     main(f"{i}")
     cv.destroyAllWindows()
